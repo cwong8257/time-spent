@@ -1,9 +1,8 @@
 import groupBy from 'lodash/groupBy';
-import filter from 'lodash/filter';
-import find from 'lodash/find';
 
 import React, {Component} from 'react';
-import {Alert} from 'react-native';
+import {SafeAreaView, ScrollView} from 'react-native';
+
 import {
   ExpandableCalendar,
   TimelineEventProps,
@@ -13,11 +12,12 @@ import {
   CalendarUtils,
 } from 'react-native-calendars';
 
-import {timelineEvents, getDate} from './mocks/timelineEvents';
+import {timelineEvents, getDate} from '../mocks/timelineEvents';
 
 const INITIAL_TIME = {hour: 9, minutes: 0};
 const EVENTS: TimelineEventProps[] = timelineEvents;
-export default class TimelineCalendarScreen extends Component {
+
+export default class TimelineCalendarScreen extends Component<any> {
   state = {
     currentDate: getDate(),
     events: EVENTS,
@@ -67,56 +67,13 @@ export default class TimelineCalendarScreen extends Component {
     }
   };
 
-  approveNewEvent: TimelineProps['onBackgroundLongPressOut'] = (
-    _timeString,
-    timeObject,
-  ) => {
-    const {eventsByDate} = this.state;
-
-    Alert.prompt('New Event', 'Enter event title', [
-      {
-        text: 'Cancel',
-        onPress: () => {
-          if (timeObject.date) {
-            eventsByDate[timeObject.date] = filter(
-              eventsByDate[timeObject.date],
-              e => e.id !== 'draft',
-            );
-
-            this.setState({
-              eventsByDate,
-            });
-          }
-        },
-      },
-      {
-        text: 'Create',
-        onPress: eventTitle => {
-          if (timeObject.date) {
-            const draftEvent = find(eventsByDate[timeObject.date], {
-              id: 'draft',
-            });
-            if (draftEvent) {
-              draftEvent.id = undefined;
-              draftEvent.title = eventTitle ?? 'New Event';
-              draftEvent.color = 'lightgreen';
-              eventsByDate[timeObject.date] = [
-                ...eventsByDate[timeObject.date],
-              ];
-
-              this.setState({
-                eventsByDate,
-              });
-            }
-          }
-        },
-      },
-    ]);
+  approveNewEvent: TimelineProps['onBackgroundLongPressOut'] = () => {
+    this.props.navigation.navigate('CreateNewEvent');
   };
 
   private timelineProps: Partial<TimelineProps> = {
     format24h: false,
-    onBackgroundLongPress: this.createNewEvent,
+    // onBackgroundLongPress: this.createNewEvent,
     onBackgroundLongPressOut: this.approveNewEvent,
     unavailableHours: [
       {start: 0, end: 6},
@@ -130,21 +87,25 @@ export default class TimelineCalendarScreen extends Component {
     const {currentDate, eventsByDate} = this.state;
 
     return (
-      <CalendarProvider
-        date={currentDate}
-        onDateChanged={this.onDateChanged}
-        onMonthChange={this.onMonthChange}
-        showTodayButton
-        disabledOpacity={0.6}>
-        <ExpandableCalendar firstDay={1} />
-        <TimelineList
-          events={eventsByDate}
-          timelineProps={this.timelineProps}
-          showNowIndicator
-          scrollToFirst
-          initialTime={INITIAL_TIME}
-        />
-      </CalendarProvider>
+      <SafeAreaView>
+        <ScrollView contentInsetAdjustmentBehavior="automatic">
+          <CalendarProvider
+            date={currentDate}
+            onDateChanged={this.onDateChanged}
+            onMonthChange={this.onMonthChange}
+            showTodayButton
+            disabledOpacity={0.6}>
+            <ExpandableCalendar firstDay={1} />
+            <TimelineList
+              events={eventsByDate}
+              timelineProps={this.timelineProps}
+              showNowIndicator
+              scrollToFirst
+              initialTime={INITIAL_TIME}
+            />
+          </CalendarProvider>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 }

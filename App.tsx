@@ -1,32 +1,23 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import {SafeAreaView, ScrollView, useColorScheme} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import TimelineCalendarScreen from './screens/timelineCalendarScreen';
+import CreateNewEventScreen from './screens/createNewEventScreen';
 
-import TimelineCalendarScreen from './timelineCalendarScreen';
+const Stack = createNativeStackNavigator();
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <TimelineCalendarScreen />
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="TimelineCalendar">
+        <Stack.Screen
+          name="TimelineCalendar"
+          component={TimelineCalendarScreen}
+        />
+        <Stack.Screen name="CreateNewEvent" component={CreateNewEventScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
