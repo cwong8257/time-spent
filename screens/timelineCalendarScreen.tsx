@@ -29,13 +29,10 @@ export default class TimelineCalendarScreen extends Component<any> {
   };
 
   onDateChanged = (date: string, source: string) => {
-    console.log('TimelineCalendarScreen onDateChanged: ', date, source);
     this.setState({currentDate: date});
   };
 
-  onMonthChange = (month: any, updateSource: any) => {
-    console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
-  };
+  onMonthChange = (month: any, updateSource: any) => {};
 
   createNewEvent: TimelineProps['onBackgroundLongPress'] = (
     timeString,
